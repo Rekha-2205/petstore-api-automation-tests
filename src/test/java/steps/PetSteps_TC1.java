@@ -1,124 +1,153 @@
 package steps;
 
-import io.cucumber.java.en.Given;
-import io.cucumber.java.en.When;
-import io.cucumber.java.en.Then;
-
-import io.restassured.RestAssured;
+import clients.PetClient;
+import io.cucumber.java.en.*;
 import io.restassured.response.Response;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import static io.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.*;
 
 public class PetSteps_TC1 {
 
-    private int petId;
+    private static final Logger log = LogManager.getLogger(PetSteps_TC1.class);
+
+    private final PetClient petClient = new PetClient();
     private Response response;
-    private String baseUrl = "https://petstore.swagger.io/v2";
-    private String name;
-    private String status;
+    private long petId;
+    private String petName;
+    private int deleteStatusCode;
 
-    public PetSteps_TC1() {
-        RestAssured.baseURI = baseUrl;
-    }
+    // STEP 1: CREATE PET
 
-    // Step 1: Create Pet(POST)
-    @Given("I create a pet with name {string} and status {string}")
+    @Given("User create a pet with name {string} and status {string}")
     public void createPet(String name, String status) {
 
-        this.name = name;
-        this.status = status;
+        petName = name + "_" + System.currentTimeMillis();
+        long id = System.currentTimeMillis();
 
-        petId = (int) (System.currentTimeMillis() % 100000);
+        log.info(" STEP 1: CREATE PET ");
 
-        String requestBody = "{\n" +
-                "\"id\": " + petId + ",\n" +
-                "\"name\": \"" + name + "\",\n" +
-                "\"status\": \"" + status + "\"\n" +
-                "}";
+        response = petClient.createPet(id, petName, status);
 
-        response = given()
-                .header("Content-Type", "application/json")
-                .body(requestBody)
-                .when()
-                .post("/pet");
+        log.info("REQUEST -> Name: " + petName + ", Status: " + status);
+        log.info("RESPONSE -> " + response.asString());
+        log.info("STATUS CODE -> " + response.getStatusCode());
 
         response.then().statusCode(200);
+
+        petId = response.jsonPath().getLong("id");
+
+        log.info("Extracted Pet ID -> " + petId);
     }
 
-    // Step 2 & 3: Get Pet
-    @When("I get the pet details")
+    // STEP 3: GET PET
+
+    @When("User retrieve the pet using created ID")
     public void getPet() {
 
-        response = given()
-                .when()
-                .get("/pet/" + petId);
+        log.info(" STEP 3: GET PET ");
+
+        response = petClient.getPet(petId);
+
+        log.info("REQUEST -> Retrieving Pet using ID: " + petId);
+        log.info("RESPONSE -> " + response.asString());
+        log.info("STATUS CODE -> " + response.getStatusCode());
 
         response.then().statusCode(200);
     }
 
-    // Validation
-    @Then("the pet name should be {string} and status should be {string}")
+    // VALIDATE NAME & STATUS
+
+    @Then("the pet details should have name {string} and status {string}")
     public void validatePet(String expectedName, String expectedStatus) {
 
+        log.info(" VALIDATING PET DETAILS ");
+
         response.then()
-                .statusCode(200)
-                .body("name", equalTo(expectedName))
+                .body("name", containsString(expectedName))
                 .body("status", equalTo(expectedStatus));
+
+        log.info("VALIDATION PASSED -> Name contains: " + expectedName +
+                " | Status: " + expectedStatus);
     }
 
-    // Step 4: Update Pet
-    @When("I update the pet status to {string}")
-    public void updatePet(String updatedStatus) {
 
-        String requestBody = "{\n" +
-                "\"id\": " + petId + ",\n" +
-                "\"name\": \"" + name + "\",\n" +
-                "\"status\": \"" + updatedStatus + "\"\n" +
-                "}";
+    // STEP 4: UPDATE PET
 
-        response = given()
-                .header("Content-Type", "application/json")
-                .body(requestBody)
-                .when()
-                .put("/pet");
+    @When("User update the pet status to {string}")
+    public void updatePet(String newStatus) {
+
+        log.info(" STEP 4: UPDATE PET ");
+
+        response = petClient.updatePet(petId, petName, newStatus);
+
+        log.info("REQUEST -> Pet ID: " + petId + ", New Status: " + newStatus);
+        log.info("RESPONSE -> " + response.asString());
+        log.info("STATUS CODE -> " + response.getStatusCode());
 
         response.then().statusCode(200);
-
-        this.status = updatedStatus;
     }
 
-    // Validation after update
+
+    // VALIDATE UPDATED STATUS
+
     @Then("the pet status should be {string}")
     public void validateUpdatedStatus(String expectedStatus) {
 
-        given()
-                .when()
-                .get("/pet/" + petId)
-                .then()
+        log.info(" VALIDATING UPDATED STATUS ");
+
+        response = petClient.getPet(petId);
+
+        log.info("REQUEST -> Fetching updated pet using ID: " + petId);
+        log.info("RESPONSE -> " + response.asString());
+        log.info("STATUS CODE -> " + response.getStatusCode());
+
+        response.then()
                 .statusCode(200)
                 .body("status", equalTo(expectedStatus));
+
+        log.info("VALIDATION PASSED -> Updated Status: " + expectedStatus);
     }
 
-    // Step 5: Delete Pet
-    @When("I delete the pet")
+    // STEP 5: DELETE PET
+
+    @When("User delete the pet")
     public void deletePet() {
 
-        response = given()
-                .when()
-                .delete("/pet/" + petId);
+        log.info(" STEP 5: DELETE PET ");
+
+        response = petClient.deletePet(petId);
+
+        deleteStatusCode = response.getStatusCode();
+
+        log.info("REQUEST -> Deleting Pet using ID: " + petId);
+        log.info("DELETE STATUS CODE -> " + deleteStatusCode);
 
         response.then().statusCode(200);
     }
 
-    // Final Validation
+    // FINAL VALIDATION
+
     @Then("the pet should not exist")
     public void verifyDeletion() {
 
-        given()
-                .when()
-                .get("/pet/" + petId)
-                .then()
-                .statusCode(404);
+        log.info(" FINAL VALIDATION ");
+
+        if (deleteStatusCode != 200) {
+            throw new AssertionError("Expected DELETE status 200 but got " + deleteStatusCode);
+        }
+
+        log.info("DELETE VALIDATION PASSED (200)");
+
+        response = petClient.getPet(petId);
+
+        log.info("REQUEST -> Verifying deletion using Pet ID: " + petId);
+        log.info("GET AFTER DELETE RESPONSE -> " + response.asString());
+        log.info("GET AFTER DELETE STATUS CODE -> " + response.getStatusCode());
+
+        response.then().statusCode(404);
+
+        log.info("FINAL VALIDATION PASSED -> Pet not found (404)");
     }
 }
