@@ -1,151 +1,187 @@
-#  Petstore API Testing – Test Case 1 (CRUD & Chaining)
-
-##  Project Overview
-
-This project demonstrates **API automation testing** for the Swagger Petstore APIs using **Java, RestAssured, Cucumber, and Maven**.  
-The focus is on **dynamic, data-driven CRUD operations** for a pet lifecycle and validating API responses with assertions.
-
-**Base URL:**  
-https://petstore.swagger.io/v2
-
-**Objective:**  
-- Create, retrieve, update, and delete a pet dynamically  
-- Validate API responses and status codes at each step  
-- Handle multiple test scenarios using **Cucumber Scenario Outline**
+#  Petstore API Automation – Test Case 1 (CRUD & API Chaining)
 
 ---
 
-##  Tools and Technologies
+##  Overview
 
-* Java 11  
-* Maven  
-* RestAssured  
-* Cucumber (io.cucumber)  
-* JUnit 4  
-* Git & GitHub  
+This project implements Test Case 1 – Pet Lifecycle using a structured API automation framework built with:
+
+- Java
+- REST Assured
+- Cucumber (BDD)
+- Maven
+- Log4j2
+
+The framework validates the complete CRUD lifecycle of a Pet and demonstrates API chaining using dynamic test data.
+
+---
+
+##  Objective
+
+To automate and validate:
+
+1. Create a pet
+2. Retrieve the pet using ID
+3. Update pet status
+4. Delete the pet
+5. Verify deletion
+
+---
+
+##  Test Flow
+
+Step 1: Create Pet (POST /pet)
+- Pet ID is generated dynamically
+- Pet name is dynamically generated using timestamp
+- Status is passed from feature file
+- Validation: Status code = 200
+
+Step 2: Extract ID
+- Pet ID is extracted from response
+- Used in all subsequent steps
+
+Step 3: Get Pet (GET /pet/{petId})
+- Pet is retrieved using extracted ID
+- Validations:
+  - Status code = 200
+  - Name matches expected value
+  - Status matches expected value
+
+Step 4: Update Pet (PUT /pet)
+- Pet status is updated dynamically
+- Validation: Status code = 200
+
+Step 5: Validate Updated Pet
+- GET request performed after update
+- Validations:
+  - Status is updated
+  - Status code = 200
+
+Step 6: Delete Pet (DELETE /pet/{petId})
+- Pet is deleted using ID
+- Validation: Status code = 200
+
+Step 7: Verify Deletion
+- GET request performed after deletion using same ID
+- Validations:
+  - Status code = 404
+  - Response: Pet not found
+
+---
+
+## API Chaining
+
+The petId generated during creation is reused in:
+- GET
+- PUT
+- DELETE
+- Final GET
+
+This ensures real-world API flow validation.
+
+---
+
+## Dynamic Data Handling
+
+- Pet ID is generated using system time
+- Pet name is dynamically created using input + timestamp
+- Status values are passed from feature file
+
+Benefits:
+- No hardcoding
+- Avoids duplicate data
+- Improves reusability
 
 ---
 
 ##  Project Structure
-petstore-api-automation/
-│
-├── src/
-│ ├── main/java/
-│ │
-│ ├── test/java/steps/
-│ │ └── PetSteps.java # Step definitions for CRUD operations
-│ │
-│ ├── test/java/runner/
-│ │ └── TestRunner.java # Cucumber test runner
-│ │
-│ └── test/resources/features/
-│ └── petLifecycle.feature # Scenario Outline for dynamic pet testing
+
+petstore-api-automation
+|
+├── src
+│   ├── main/java
+│   │   ├── base
+│   │   │   └── BaseTest.java
+│   │   └── clients
+│   │       └── PetClient.java
+│   │
+│   └── test
+│       ├── java
+│       │   ├── runner
+│       │   │   └── TestRunner_TC1.java
+│       │   └── steps
+│       │       └── PetSteps_TC1.java
+│       │
+│       └── resources
+│           ├── features
+│           │   └── petLifecycle_TC1.feature
+│           └── log4j2.xml
 │
 ├── pom.xml
 └── README.md
 
 ---
 
-##  Test Case Implementation – Pet Lifecycle
+##  Feature File
 
-### Step 1: Create Pet (POST)
+Scenario Outline: Verify complete pet lifecycle
+  Given User create a pet with name "<name>" and status "<status>"
 
-- Dynamically create a pet using name and status from the feature file  
-- Extract **pet ID** for subsequent API calls  
-- **Expected Status Code:** 200  
+  When User retrieve the pet using created ID
+  Then the pet details should have name "<name>" and status "<status>"
 
-### Step 2: Retrieve Pet (GET)
+  When User update the pet status to "<updatedStatus>"
+  Then the pet status should be "<updatedStatus>"
 
-- Get the pet details using the extracted ID  
-- Validate **name** and **status** match input  
-- **Expected Status Code:** 200  
-
-### Step 3: Update Pet Status (PUT)
-
-- Update the pet’s status dynamically (e.g., “sold”)  
-- Validate updated status using GET  
-- **Expected Status Code:** 200  
-
-### Step 4: Delete Pet (DELETE)
-
-- Delete the pet using the extracted ID  
-- Verify deletion with GET (should return 404)  
-- **Expected Status Code:** 200 (DELETE), 404 (GET after deletion)  
+  When User delete the pet
+  Then the pet should not exist
 
 ---
 
-## Feature File Example
+##  Logging
 
-```gherkin
-Feature: Pet Lifecycle
+Logs include:
+- Request details
+- Response body
+- Status codes
+- Validation messages
 
-Scenario Outline: Verify complete pet lifecycle
-  Given I create a pet with name "<name>" and status "<status>"
-  When I get the pet details
-  Then the pet name should be "<name>" and status should be "<status>"
-  When I update the pet status to "<updatedStatus>"
-  Then the pet status should be "<updatedStatus>"
-  When I delete the pet
-  Then the pet should not exist
+Example:
+- CREATE STATUS CODE -> 200
+- GET STATUS CODE -> 200
+- DELETE STATUS CODE -> 200
+- GET AFTER DELETE STATUS CODE -> 404
 
-Examples:
-  | name    | status        | updatedStatus |
-  | ruby    | available     | sold          |
-  | shadow  | not available | sold          |
+---
 
-  ##  Step Definitions (PetSteps.java)
+## Execution
 
-POST /pet → Create a pet with a dynamic name and status
-GET /pet/{petId} → Retrieve the pet details and validate
-PUT /pet → Update the pet status dynamically
-DELETE /pet/{petId} → Delete the pet and validate with 404
+Run:
+mvn clean test
 
-All dynamic data is generated using System.currentTimeMillis() to ensure unique pet IDs for each run.
+---
 
+##  Results
 
-##  Runner Class (TestRunner.java)
+- CRUD operations validated
+- API chaining implemented
+- Dynamic data handling achieved
+- Status codes verified
+- Deletion confirmed with 404
 
-Runs all feature files in the project
-Uses Cucumber JUnit integration
-Generates console output for test execution
+---
 
+## 🏁 Conclusion
 
+This framework demonstrates:
+- End-to-end API lifecycle validation
+- BDD implementation using Cucumber
+- Proper use of REST Assured
+- Dynamic data handling
+- API chaining
 
-## How It Works
+---
 
-The feature file drives the test using Scenario Outline and Examples
-Step definitions execute API calls via RestAssured
-Responses are validated with status codes and body assertions
-Dynamic data is generated using unique IDs for each test run
-After deletion, 404 status code is verified to confirm the pet is removed
-  
-##  Execution Steps
+## 👩‍💻 Author
 
-Open project in IDE -IntelliJ
-Run Maven build to download dependencies:
-mvn clean install
-Run Cucumber tests via TestRunner.java
-Observe console output for step execution and status codes
-Each step prints HTTP responses in the console for verification
-Any assertion failure will be displayed with error details
-
-##  Key Learnings
-
-Understanding CRUD operations using APIs
-Using Cucumber BDD with RestAssured for automation
-Validating response body and HTTP status codes
-Structuring Maven project for multiple test cases
-Using dynamic data for test chaining
-
-## Conclusion
-
-Test Case 1 successfully demonstrates the **complete lifecycle of a pet** in the Swagger Petstore API:
-
-- **Creation** of a pet with dynamic ID and initial status.  
-- **Retrieval** and **validation** of pet details using GET requests.  
-- **Updating** the pet status and verifying the change.  
-- **Deletion** of the pet and validation of removal using the 404 status code.  
-
-This test case confirms that all CRUD operations are working correctly, responses are validated for both **data and HTTP status codes**, and the automation framework supports **dynamic, reusable, and maintainable testing**.  
-
-It provides a solid foundation to add more **API test cases** in a structured and professional manner.
+Rekha
