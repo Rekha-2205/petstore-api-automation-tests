@@ -171,7 +171,7 @@ mvn clean test
 
 ---
 
-## 🏁 Conclusion
+## Conclusion
 
 This framework demonstrates:
 - End-to-end API lifecycle validation
@@ -182,6 +182,6 @@ This framework demonstrates:
 
 ---
 
-## 👩‍💻 Author
+##  Author
 
 Rekha
