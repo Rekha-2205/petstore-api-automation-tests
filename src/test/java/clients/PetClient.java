@@ -58,4 +58,22 @@ public class PetClient {
                 .when()
                 .delete("/v2/pet/" + petId);
     }
+
+    // ===== TC2 METHODS =====
+    // Get Inventory
+    public Response getInventory() {
+        return given()
+                .relaxedHTTPSValidation()
+                .when()
+                .get("/v2/store/inventory");
+    }
+
+    // Get Inventory
+    public Response getPetsByStatus(String status) {
+        return given()
+                .relaxedHTTPSValidation()
+                .queryParam("status", status)
+                .when()
+                .get("/v2/pet/findByStatus");
+    }
 }
