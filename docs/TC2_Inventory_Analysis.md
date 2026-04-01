@@ -1,120 +1,122 @@
-#  Test Case 2: Inventory Analysis (Complex Data Parsing)
+# Test Case 2: Inventory Analysis (Cross-Endpoint Validation)
 
-## Overview
+## Objective
 
-This test case validates the consistency and accuracy of data across multiple API endpoints in the Petstore application. It focuses on **cross-endpoint validation** and **dynamic data handling**, which are critical aspects of real-world API automation.
-
-The objective is to ensure that the number of pets marked as **"available"** is consistent across different API responses.
+Validate that the number of pets marked as **"available"** in the inventory API matches the number of pets returned by the pet listing API.
 
 ---
 
-##  Objective
+##  APIs Used
 
-* Validate inventory data returned by '/store/inventory'
-* Compare it with the list of pets returned by 'pet/findByStatus'
-* Ensure both endpoints reflect consistent real-time data
+### 1. Get Inventory
 
----
+```
+GET /store/inventory
+```
 
-##  APIs Covered
+* Returns a map of pet statuses and their counts.
 
-### 1. GET /store/inventory
+### 2. Get Pets by Status
 
-* Returns a map of pet statuses and their counts
+```
+GET /pet/findByStatus?status=available
+```
 
----
-
-### 2. GET /pet/findByStatus?status=available
-
-* Returns a list of pets with status "available"
-* Used to validate the count obtained from inventory
+* Returns a list of pets filtered by status.
 
 ---
 
-##  Test Workflow
+##  Test Flow
 
 ### Step 1: Fetch Inventory Data
 
-* Send GET request to '/store/inventory'
-* Extract count of "available" pets
+* Call `/store/inventory`
+* Parse response as a `Map<String, Integer>`
+* Extract count for given status (e.g., "available")
 
-### Step 2: Fetch Available Pets List
+### Step 2: Fetch Pet List
 
-* Send GET request to '/pet/findByStatus?status=available'
+* Call `/pet/findByStatus?status=available`
 * Count number of items in response list
 
 ### Step 3: Validation
 
 * Compare both counts
-* Allow slight variation (+/-1) due to real-time API updates
+* Assert they match exactly
 
 ---
 
-## Validation Logic
+##  Key Implementation Details
 
-The test ensures:
+###  Dynamic Data Handling
 
-* Inventory count = List count
-* Difference <=1 (to handle live data changes)
+* Status is passed from **feature file**
+* No hardcoded values used
+
+### Robust Parsing Logic
+
+* Handles inconsistent API keys (e.g., "available", "Available")
+* Uses fallback logic with case-insensitive matching
+
+###  Cross-Endpoint Validation
+
+* Ensures consistency between:
+
+  * Inventory API (aggregated data)
+  * Pet API (actual records)
+
+### Logging
+
+* Logs request, response, and validation details using Log4j
 
 ---
 
-## Key Concepts Implemented
+## Project Structure
 
-*  Cross-endpoint validation
-*  Dynamic data handling (no hardcoding)
-*  JSON response parsing
-*  API chaining
-*  Real-time validation strategy
-
----
-
-##  Project Files
-
-| File                      | Description                 |
-| ------------------------- | --------------------------- |
-|'inventory_TC2.feature'   | Cucumber feature file       |
-| 'InventorySteps_TC2.java' | Step definitions with logic |
-| 'TestRunner_TC2.java'     | Test runner                 |
-| 'PetClient.java'          | API interaction methods     |
+```
+src
+ └── test
+     ├── java
+     │   ├── clients
+     │   │   └── PetClient.java
+     │   ├── steps
+     │   │   └── InventorySteps_TC2.java
+     │   └── runner
+     │       └── TestRunner_TC2.java
+     │
+     └── resources
+         └── features
+             └── inventory_TC2.feature
+```
 
 ---
 
 ##  Execution
 
-Run only Test Case 2 using:
+Run only Test Case 2:
 
-'''bash
-mvn clean test "-Dtest=runner.TestRunner_TC2"
-'''
-
----
-
-## Expected Output
-
-* Inventory count printed in logs
-* List count printed in logs
-* Validation result displayed
-* Test execution should PASS
+```
+mvn test -Dtest=TestRunner_TC2
+```
 
 ---
 
-## Notes
+## Sample Output
 
-* All data is fetched dynamically from API responses
-* No static or hardcoded values are used
-* Minor mismatches are expected due to concurrent API updates
-* Designed to reflect real-world automation scenarios
+* Inventory Count: 491
+* Pet List Count: 491
+* Validation Passed
 
 ---
 
 ## Conclusion
 
-This test case successfully demonstrates:
+This test case ensures **data consistency across APIs** by validating that:
 
-* Advanced API validation techniques
-* Handling of dynamic and real-time data
-* Implementation of scalable and maintainable automation logic
+* Inventory summary data matches actual pet records.
+* Implementation is robust, dynamic, and production-ready.
+
+---
 
 ## Author
 Rekha
