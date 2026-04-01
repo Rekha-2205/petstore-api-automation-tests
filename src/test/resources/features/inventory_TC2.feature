@@ -1,8 +1,11 @@
 @TC2
-Feature: Inventory Analysis - TC2
+Feature: Inventory Analysis
 
-  Scenario: Verify available pet count from inventory matches pet list
+  Scenario Outline: Verify pet count matches inventory data
+    Given user fetches inventory for "<status>"
+    When user fetches pets by status "<status>"
+    Then user validates count matches for "<status>"
 
-    Given user gets inventory data for TC2
-    When user gets pets with status available for TC2
-    Then verify available pet count matches for TC2
+    Examples:
+      | status    |
+      | available |
