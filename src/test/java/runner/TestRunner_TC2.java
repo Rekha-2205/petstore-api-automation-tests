@@ -6,9 +6,10 @@ import io.cucumber.junit.CucumberOptions;
 
 @RunWith(Cucumber.class)
 @CucumberOptions(
-        features = "src/test/resources/features/inventory_TC2.feature",
-        glue = {"steps"},
-        plugin = {"pretty", "html:target/cucumber-reports.html"},
+        features = "src/test/resources/features",
+        glue = "steps",
+        tags = "@TC2",
+        plugin = {"pretty", "html:target/cucumber-report.html"},
         monochrome = true
 )
 public class TestRunner_TC2 {
