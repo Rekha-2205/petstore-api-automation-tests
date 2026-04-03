@@ -32,8 +32,8 @@ public class InventorySteps_TC2 {
 
         inventoryResponse = petClient.getInventory();
 
-        log.info("STATUS CODE: " + inventoryResponse.getStatusCode());
-        log.info("RESPONSE: " + inventoryResponse.asString());
+        log.info("STATUS CODE : " + inventoryResponse.getStatusCode());
+        log.info("RESPONSE : " + inventoryResponse.asString());
 
         inventoryResponse.then().statusCode(200);
 
