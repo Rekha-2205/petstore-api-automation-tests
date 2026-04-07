@@ -14,7 +14,6 @@ public class PetClient {
         RestAssured.baseURI = "https://petstore.swagger.io/v2";
         RestAssured.useRelaxedHTTPSValidation();
     }
-
     public Response createPet(long id, String name, String status) {
 
         Map<String, Object> body = new HashMap<>();
