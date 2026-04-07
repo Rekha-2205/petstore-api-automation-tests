@@ -11,7 +11,7 @@ import static io.restassured.RestAssured.given;
 public class PetClient {
 
     static {
-        RestAssured.baseURI = "https://petstore.swagger.io";
+        RestAssured.baseURI = "https://petstore.swagger.io/v2";
         RestAssured.useRelaxedHTTPSValidation();
     }
 
@@ -27,14 +27,14 @@ public class PetClient {
                 .header("Content-Type", "application/json")
                 .body(body)
                 .when()
-                .post("/v2/pet");
+                .post("/pet");
     }
 
     public Response getPet(long petId) {
         return given()
                 .relaxedHTTPSValidation()
                 .when()
-                .get("/v2/pet/" + petId);
+                .get("/pet/" + petId);
     }
 
     public Response updatePet(long id, String name, String status) {
@@ -49,13 +49,56 @@ public class PetClient {
                 .header("Content-Type", "application/json")
                 .body(body)
                 .when()
-                .put("/v2/pet");
+                .put("/pet");
     }
 
     public Response deletePet(long petId) {
         return given()
                 .relaxedHTTPSValidation()
                 .when()
-                .delete("/v2/pet/" + petId);
+                .delete("/pet/" + petId);
     }
+
+    //  TC2 METHODS
+    // Get Inventory
+    public Response getInventory() {
+        return given()
+                .when()
+                .get("/store/inventory");
+    }
+
+    // Get Inventory
+    public Response getPetsByStatus(String status) {
+        return given()
+                .queryParam("status", status)
+                .when()
+                .get("/pet/findByStatus");
+    }
+
+//  TC3 METHODS
+
+// Create User
+public Response createUser(Map<String, Object> body) {
+    return given()
+            .header("Content-Type", "application/json")
+            .body(body)
+            .when()
+            .post("/user");
+}
+
+// Get User by Username
+public Response getUser(String username) {
+    return given()
+            .when()
+            .get("/user/" + username);
+}
+
+// Login User
+public Response loginUser(String username, String password) {
+    return given()
+            .queryParam("username", username)
+            .queryParam("password", password)
+            .when()
+            .get("/user/login");
+}
 }
