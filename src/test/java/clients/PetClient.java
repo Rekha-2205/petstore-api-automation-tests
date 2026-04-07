@@ -15,7 +15,6 @@ public class PetClient {
         RestAssured.useRelaxedHTTPSValidation();
     }
     public Response createPet(long id, String name, String status) {
-
         Map<String, Object> body = new HashMap<>();
         body.put("id", id);
         body.put("name", name);
