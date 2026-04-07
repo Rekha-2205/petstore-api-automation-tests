@@ -4,7 +4,8 @@ import io.restassured.RestAssured;
 
 public class BaseTest {
 
-    static {
+    static
+    {
         RestAssured.baseURI = "https://petstore.swagger.io/v2";
         RestAssured.useRelaxedHTTPSValidation();
     }
