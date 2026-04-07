@@ -11,7 +11,7 @@ import static io.restassured.RestAssured.given;
 public class PetClient {
 
     static {
-        RestAssured.baseURI = "https://petstore.swagger.io";
+        RestAssured.baseURI = "https://petstore.swagger.io/v2";
         RestAssured.useRelaxedHTTPSValidation();
     }
 
@@ -57,5 +57,21 @@ public class PetClient {
                 .relaxedHTTPSValidation()
                 .when()
                 .delete("/v2/pet/" + petId);
+    }
+
+    //  TC2 METHODS
+    // Get Inventory
+    public Response getInventory() {
+        return given()
+                .when()
+                .get("/store/inventory");
+    }
+
+    // Get Inventory
+    public Response getPetsByStatus(String status) {
+        return given()
+                .queryParam("status", status)
+                .when()
+                .get("/pet/findByStatus");
     }
 }
