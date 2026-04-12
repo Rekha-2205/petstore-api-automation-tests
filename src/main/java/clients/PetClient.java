@@ -61,17 +61,15 @@ public class PetClient {
 
     //  TC2 METHODS
     // Get Inventory
-    public Response getInventory() {
-        return given()
-                .when()
-                .get("/store/inventory");
-    }
-
-    // Get Inventory
     public Response getPetsByStatus(String status) {
         return given()
                 .queryParam("status", status)
+                .log().all()
                 .when()
-                .get("/pet/findByStatus");
+                .get("/pet/findByStatus")
+                .then()
+                .log().all()
+                .extract()
+                .response();
     }
 }
