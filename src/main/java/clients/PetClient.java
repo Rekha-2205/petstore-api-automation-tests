@@ -66,7 +66,7 @@ public class PetClient {
                 .queryParam("status", status)
                 .log().all()
                 .when()
-                .get("/pet/findByStatus")   // ✅ FIXED (no /v2)
+                .get("/pet/findByStatus")  
                 .then()
                 .log().all()
                 .extract()
