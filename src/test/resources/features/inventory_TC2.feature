@@ -1,4 +1,5 @@
 @TC2
+  
 Feature: Inventory Analysis
 
   Scenario Outline: Verify pet count matches inventory data
