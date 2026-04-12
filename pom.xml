@@ -9,7 +9,6 @@
   <version>1.0-SNAPSHOT</version>
 
   <!-- PROPERTIES -->
-
   <properties>
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
@@ -21,20 +20,17 @@
     <jackson.version>2.17.0</jackson.version>
   </properties>
 
-
   <!-- DEPENDENCIES -->
-
   <dependencies>
 
-    <!-- REST Assured -->
+    <!-- REST Assured (IMPORTANT: NO test scope) -->
     <dependency>
       <groupId>io.rest-assured</groupId>
       <artifactId>rest-assured</artifactId>
       <version>${restassured.version}</version>
-      <scope>test</scope>
     </dependency>
 
-    <!-- Jackson (Better than org.json for APIs) -->
+    <!-- Jackson -->
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
@@ -49,7 +45,7 @@
       <scope>test</scope>
     </dependency>
 
-    <!-- Cucumber JUnit Integration -->
+    <!-- Cucumber JUnit -->
     <dependency>
       <groupId>io.cucumber</groupId>
       <artifactId>cucumber-junit</artifactId>
@@ -57,7 +53,7 @@
       <scope>test</scope>
     </dependency>
 
-    <!-- JUnit (Required for @RunWith) -->
+    <!-- JUnit -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -65,7 +61,7 @@
       <scope>test</scope>
     </dependency>
 
-    <!-- Hamcrest (Assertions) -->
+    <!-- Hamcrest -->
     <dependency>
       <groupId>org.hamcrest</groupId>
       <artifactId>hamcrest</artifactId>
@@ -73,7 +69,7 @@
       <scope>test</scope>
     </dependency>
 
-    <!-- Log4j2 Logging -->
+    <!-- Log4j2 -->
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-api</artifactId>
@@ -103,7 +99,7 @@
         </configuration>
       </plugin>
 
-      <!-- Test Runner -->
+      <!-- Surefire -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
@@ -116,5 +112,6 @@
 
     </plugins>
   </build>
+  
 
 </project>
