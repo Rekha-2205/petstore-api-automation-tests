@@ -9,8 +9,9 @@ import io.cucumber.junit.CucumberOptions;
         features = "src/test/resources/features",
         glue = "steps",
         tags = "@TC2",
-        plugin = {"pretty", "html:target/cucumber-report.html"},
+        plugin = {"pretty", "html:target/cucumber-tc2.html"},
         monochrome = true
 )
+
 public class TestRunner_TC2 {
 }
