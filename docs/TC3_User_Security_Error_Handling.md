@@ -1,225 +1,220 @@
 # Test Case 3: User Security & Error Handling (Negative Testing)
 
+---
+
 ## Overview
 
-This test case validates **negative scenarios** for the User APIs of the Swagger Petstore application.
+This test case validates how the system behaves under *Invalid inputs and negative scenarios*.
+It focuses on ensuring that the API responds correctly to incorrect data, non-existent resources, and invalid authentication attempts.
 
-The goal is to ensure that the system:
+Unlike positive testing, this scenario emphasizes *robustness, error handling, and system reliability*.
 
-* Handles invalid inputs properly
-* Returns correct error responses
-* Does not allow invalid authentication
+---
 
-This implementation reflects **real-world API testing practices**, including handling API limitations gracefully.
+## Objective
+
+The primary goals of this test case are:
+
+* Validate API behavior when "invalid user data" is submitted
+* Ensure proper "error handling for non-existing users"
+* Verify "login behavior with incorrect credentials"
+* Handle "real-world API inconsistencies gracefully"
+
+---
+
+## Technology Stack
+
+* Java
+* REST Assured
+* Cucumber (BDD)
+* Maven
+* JUnit
+* Log4j2 (Logging)
+
+---
+
+## Framework Structure
+
+The framework follows a clean and reusable architecture:
 
 
+src
+ ├── main/java
+ │    ├── base        -> Common configuration (BaseTest)
+ │    ├── clients     -> API interaction layer (UserClient)
+ │    └── models      -> Request payloads (User)
+ │
+ ├── test/java
+ │    ├── steps       -> Step definitions (UserSteps_TC3)
+ │    └── runner      -> Test runner (TestRunner_TC3)
+ │
+ └── test/resources
+      └── features    -> Feature files (user_TC3.feature)
 
-## Test Scenario
 
-### Scenario: Validate invalid user operations
+---
 
-The test flow consists of three key steps:
+## Test Scenario Flow
 
+### Scenario: Validate User Security and Error Handling
 
+---
 
 ### Step 1: Create User with Invalid Email
 
-**API Endpoint:**
-POST /user
+*API:* "POST /user"
 
-**Description:**
-A user is created using an **invalid email format** (e.g., 'invalid_email').
+* A new user is created with an *invalid email format*(e.g., `invalid_email`)
+* Dynamic data is used for username to avoid duplication
 
-**Expected Behavior:**
-The system should reject invalid email formats.
+*Validations Performed:*
 
-**Actual Behavior (Swagger Petstore):**
-The API accepts invalid email and returns **200 OK**.
+* Status Code is "200"
+* Response contains the "created user ID"
+* Confirms that the API allows invalid email (observed behavior)
 
-**Validation:**
-
-* Status code is verified as '200'
-
-**Observation:**
-This indicates missing validation on the server side.
-
+---
 
 ### Step 2: Fetch Non-Existing User
 
-**API Endpoint:**
-GET /user/{username}
+*API:* "GET /user/{username}"
 
-**Description:**
-Attempt to fetch a user that does not exist.
+* Attempt to retrieve a user that does not exist
 
-**Expected Behavior:**
+*Validations Performed:*
 
-* Status code should be '404'
-* Response message should contain "User not found"
+* Status Code is "404"
+* Response contains message:
 
-**Validation:**
+  "
+  User not found
+  "
 
-* Status code is asserted as '404'
-* Response message is validated
-
-
+---
 
 ### Step 3: Login with Invalid Credentials
 
-**API Endpoint:**
-GET /user/login
+*API:* "GET /user/login"
 
-**Description:**
-Attempt login using incorrect username and password.
+* Login attempted with incorrect username and password
 
-**Expected Behavior:**
+*Expected Behavior:*
 
-* Login should fail
-* No session token should be returned
+* System should *not return a valid session token*
 
-**Actual Behavior (Swagger Petstore):**
-The API incorrectly returns:
-"logged in user session:xxxx"
+*Actual API Behavior (Swagger Limitation):*
 
-**Handling Strategy:**
+* API returns a session token even for invalid credentials
 
-* This is treated as a **known API limitation**
-* Instead of failing the test incorrectly:
+---
 
-  * A warning is logged
-  * Test is marked as passed with explanation
+## Important Observation
 
+The Swagger Petstore API has a known limitation:
 
+> It returns a successful login response even for invalid credentials.
 
-## Data-Driven Testing
+---
 
-This test case is fully **data-driven using Cucumber Scenario Outline**.
+## Framework Handling Strategy
 
-**Example:**
+To ensure correct validation:
 
-Examples:
+* The framework *detects the unexpected behavior*
+* Logs a *clear warning message*
+* Avoids false test failure
+* Maintains test stability and accuracy
 
-| email         | username           | message        | loginUser    | password     |
-| ------------- | ------------------ | -------------- | ------------ | ------------ |
-| invalid_email | nonExistentUser123 | User not found | wrongUser123 | wrongPass123 |
+Example log:
 
-**Advantages:**
+"
+Swagger limitation: session returned even for invalid login
+"
 
-* Easy to extend with multiple datasets
-* Improves reusability
-* Enhances maintainability
+---
 
+## Logging Strategy
 
+Each step logs:
 
-## Framework Design
+* Request details
+* Response status code
+* Response body
+* Validation results
 
-The framework follows a **layered architecture**:
+This ensures:
 
-### 1. Client Layer
+* Easy debugging
+* Clear execution trace
+* Professional reporting
 
-Handles API calls using REST Assured
-Methods used:
+---
 
-* createUser()
-* getUser()
-* loginUser()
+## Assertions Used
 
-### 2. Step Definition Layer
+* "assertEquals" -> Status code validation
+* "assertTrue" -> Response content validation
+* Conditional validation for API inconsistencies
 
-Implements test logic:
+All assertions include "clear and meaningful messages".
 
-* Executes API calls
-* Performs validations
-* Handles logging
+---
 
-### 3. Feature Layer
+## Data Handling
 
-Defines scenarios in **Gherkin (BDD format)** for readability.
+* Dynamic test data is used:
 
+  * Unique usernames generated using timestamps
+* Ensures:
 
+  * No duplication
+  * Repeatable execution
+  * Independent test runs
 
-## Logging & Reporting
-
-* Logging implemented using **Log4j2**
-* Each step logs:
-
-  * API endpoint
-  * Status code
-  * Response body
-* Warnings are logged for API inconsistencies
-
-
-
-## Real-World Observations
-
-| Scenario      | Observation                           |
-| ------------- | ------------------------------------- |
-| Invalid Email | API accepts invalid input             |
-| Invalid Login | API returns session token incorrectly |
-
-These behaviors indicate:
-
-* Lack of input validation
-* Weak authentication checks
-
-
-
-##  Assertions Used
-
-* assertEquals() -> for status code validation
-* assertTrue() -> for response message validation
-* Conditional assertions -> for handling API limitations
-
-
+---
 
 ## Execution
 
-Run the test using:
+Run only Test Case 3 using:
 
-mvn test -Dtest=TestRunner_TC3
+"
+bash
+mvn clean test -Dtest=TestRunner_TC3
+"
 
+---
 
+## Execution Outcome
 
-##  Project Structure
+| Step                           | Result                           |
+| ------------------------------ | -------------------------------- |
+| Create user with invalid email | Passed                           |
+| Fetch non-existing user        | Passed                           |
+| Invalid login handling         | Passed (with limitation handled) |
 
-src
-├── test
-│   ├── java
-│   │   ├── clients
-│   │   │   └── PetClient.java
-│   │   ├── steps
-│   │   │   └── UserSteps_TC3.java
-│   │   └── runner
-│   │       └── TestRunner_TC3.java
-│   └── resources
-│       └── features
-│           └── user_TC3.feature
-
-docs
-└── TC3_User_Security_Error_Handling.md
-
-
+---
 
 ## Key Highlights
 
-* Negative testing implemented effectively
-* Fully data-driven approach
-* Clean framework design
-* Handles real-world API issues
-* Proper logging and validations
-* Scalable and maintainable structure
+* Strong negative testing coverage
+* Real-world API limitation handled professionally
+* Clean and reusable framework design
+* Dynamic data usage
+* Detailed logging and reporting
 
-
+---
 
 ## Conclusion
 
-This test case successfully validates **User API error handling and security behavior**.
+This test case successfully validates "system behavior under negative conditions".
 
 It demonstrates:
 
-* Strong understanding of negative testing
-* Ability to handle real-world API inconsistencies
-* Professional automation framework design
+* Strong understanding of "error handling"
+* Ability to manage "real-world API inconsistencies"
+* Development of "robust, maintainable automation tests"
+
+---
 
 ## Author
-Rekha
+Rekha M
