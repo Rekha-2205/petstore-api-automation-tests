@@ -19,15 +19,15 @@ public class UserSteps_TC3 extends BaseTest {
     private Response response;
 
     private String createdUsername;
-    private User user; // ✅ NEW (to reuse for validation)
+    private User user; // (to reuse for validation)
 
     // STEP 1: Create user with invalid email
     @Given("user creates a user with invalid email {string} and password {string} and phone {string}")
     public void createUserWithInvalidEmail(String email, String password, String phone) {
 
-        log.info("===== STEP 1: CREATE USER WITH INVALID EMAIL =====");
+        log.info("STEP 1: CREATE USER WITH INVALID EMAIL");
 
-        user = new User(); // ✅ store user object
+        user = new User(); // store user object
 
         user.setId((int) (Math.random() * 10000));
         createdUsername = "invalidUser_" + System.currentTimeMillis();
@@ -45,10 +45,10 @@ public class UserSteps_TC3 extends BaseTest {
         log.info("Status Code: {}", response.getStatusCode());
         log.info("Response Body: {}", response.getBody().asString());
 
-        // ✅ EXISTING VALIDATION
+        // EXISTING VALIDATION
         assertEquals("User creation failed", 200, response.getStatusCode());
 
-        // ✅ NEW IMPROVEMENT (STRONG ASSERTION)
+        // NEW IMPROVEMENT (STRONG ASSERTION)
         String responseBody = response.getBody().asString();
         assertTrue(
                 "Response does not contain created user ID",
@@ -62,7 +62,7 @@ public class UserSteps_TC3 extends BaseTest {
     @When("user fetches non existing user {string}")
     public void getNonExistingUser(String username) {
 
-        log.info("===== STEP 2: FETCH NON-EXISTING USER =====");
+        log.info("STEP 2: FETCH NON-EXISTING USER");
         log.info("Request Username: {}", username);
 
         response = userClient.getUser(username);
@@ -91,7 +91,7 @@ public class UserSteps_TC3 extends BaseTest {
     @When("user tries to login with username {string} and password {string}")
     public void loginInvalidUser(String username, String password) {
 
-        log.info("===== STEP 3: INVALID LOGIN ATTEMPT =====");
+        log.info(" STEP 3: INVALID LOGIN ATTEMPT");
         log.info("Username: {}", username);
 
         response = userClient.loginUser(username, password);
