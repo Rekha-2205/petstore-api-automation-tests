@@ -1,6 +1,5 @@
 package clients;
 
-import io.restassured.RestAssured;
 import io.restassured.response.Response;
 
 import java.util.HashMap;
@@ -10,10 +9,9 @@ import static io.restassured.RestAssured.given;
 
 public class PetClient {
 
-    static {
-        RestAssured.baseURI = "https://petstore.swagger.io/v2";
-        RestAssured.useRelaxedHTTPSValidation();
-    }
+    // =========================
+    // TC1 METHODS
+    // =========================
 
     public Response createPet(long id, String name, String status) {
 
@@ -23,7 +21,6 @@ public class PetClient {
         body.put("status", status);
 
         return given()
-                .relaxedHTTPSValidation()
                 .header("Content-Type", "application/json")
                 .body(body)
                 .when()
@@ -32,7 +29,6 @@ public class PetClient {
 
     public Response getPet(long petId) {
         return given()
-                .relaxedHTTPSValidation()
                 .when()
                 .get("/pet/" + petId);
     }
@@ -45,7 +41,6 @@ public class PetClient {
         body.put("status", status);
 
         return given()
-                .relaxedHTTPSValidation()
                 .header("Content-Type", "application/json")
                 .body(body)
                 .when()
@@ -54,51 +49,86 @@ public class PetClient {
 
     public Response deletePet(long petId) {
         return given()
-                .relaxedHTTPSValidation()
                 .when()
                 .delete("/pet/" + petId);
     }
 
-    //  TC2 METHODS
-    // Get Inventory
-    public Response getInventory() {
-        return given()
-                .when()
-                .get("/store/inventory");
-    }
+    // =========================
+    // TC2 METHODS
+    // =========================
 
     // Get Inventory
     public Response getPetsByStatus(String status) {
         return given()
                 .queryParam("status", status)
+                .log().all()
                 .when()
-                .get("/pet/findByStatus");
+                .get("/pet/findByStatus")
+                .then()
+                .log().all()
+                .extract()
+                .response();
+
     }
 
-//  TC3 METHODS
+    // =========================
+    // TC4 METHODS
+    // =========================
 
-// Create User
-public Response createUser(Map<String, Object> body) {
-    return given()
-            .header("Content-Type", "application/json")
-            .body(body)
-            .when()
-            .post("/user");
-}
+        // CREATE PET
 
-// Get User by Username
-public Response getUser(String username) {
-    return given()
-            .when()
-            .get("/user/" + username);
-}
+    public Response createPet_TC4(Map<String, Object> body) {
+        return given()
+                .header("Content-Type", "application/json")
+                .body(body)
+                .log().all()
+                .when()
+                .post("/pet")
+                .then()
+                .log().all()
+                .extract()
+                .response();
+    }
 
-// Login User
-public Response loginUser(String username, String password) {
-    return given()
-            .queryParam("username", username)
-            .queryParam("password", password)
-            .when()
-            .get("/user/login");
-}
+        // UPDATE PET
+
+    public Response updatePet_TC4(Map<String, Object> body) {
+        return given()
+                .header("Content-Type", "application/json")
+                .body(body)
+                .log().all()
+                .when()
+                .put("/pet")
+                .then()
+                .log().all()
+                .extract()
+                .response();
+    }
+
+        //GET PET BY ID
+
+    public Response getPetById_TC4(long petId) {
+        return given()
+                .log().all()
+                .when()
+                .get("/pet/" + petId)
+                .then()
+                .log().all()
+                .extract()
+                .response();
+    }
+
+        //GET PET BY STATUS
+
+    public Response getPetsByStatus_TC4(String status) {
+        return given()
+                .queryParam("status", status)
+                .log().all()
+                .when()
+                .get("/pet/findByStatus")
+                .then()
+                .log().all()
+                .extract()
+                .response();
+    }
 }
