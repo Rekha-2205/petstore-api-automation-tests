@@ -64,7 +64,7 @@ src
 
 *API:* "POST /user"
 
-* A new user is created with an *invalid email format*(e.g., `invalid_email`)
+* A new user is created with an *invalid email format*(e.g., invalid_email)
 * Dynamic data is used for username to avoid duplication
 
 *Validations Performed:*
