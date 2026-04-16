@@ -22,4 +22,5 @@ public class BaseTest {
                         .setParam("http.socket.timeout", 5000)     // 5 sec response timeout
                 );
     }
+
 }
