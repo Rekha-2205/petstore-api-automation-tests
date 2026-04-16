@@ -15,7 +15,7 @@ This scenario represents a "real-world testing use case", where data returned by
 
 ---
 
-## Business Use Case
+## Use Case
 
 In a real application:
 
@@ -201,16 +201,6 @@ mvn clean test -Dtest=TestRunner_TC2
 "
  Ensures isolated execution without affecting other test cases
 
----
-
-## Sample Execution Output
-
-"
-Inventory Count: 506
-Pet List Count: 506
-Validation successful: Inventory is consistent with pet list
-
-"
 
 ---
 
@@ -237,15 +227,6 @@ Inventory API returns inconsistent or incorrect keys
 * Used case-insensitive comparison
 * Trimmed extra spaces
 * Ensured correct aggregation
-
----
-
-## Future Enhancements
-
-* Add schema validation for API responses
-* Integrate advanced reporting tools (Extent Reports)
-* Add retry mechanism for unstable APIs
-* Extend validation for multiple statuses
 
 ---
 
