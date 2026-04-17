@@ -1,168 +1,73 @@
-# Test Case 2 - Inventory Analysis (Cross-Endpoint Validation)
-
----
+# Test Case 2: Inventory Analysis (Cross-Endpoint Validation)
 
 ## Objective
 
-The objective of this test case is to validate "data consistency between two independent API" in the Petstore system.
-
-Specifically, this test ensures that:
-
-* The number of pets marked as "available" in the inventory API
-* Matches (or logically aligns with) the number of pets returned by the pet listing API
-
-This scenario represents a "real-world testing use case", where data returned by different services must remain consistent across the system.
+Validate that the number of pets marked as *"available"* in the inventory API matches the number of pets returned by the pet listing API.
 
 ---
 
-## Use Case
+##  APIs Used
 
-In a real application:
+### 1. Get Inventory
 
-* The *Inventory API* provides a summarized count of pets grouped by status
-* The *Pet API* provides detailed records of pets
 
-Any mismatch between these two sources could indicate:
+GET /store/inventory
 
-* Data synchronization issues
-* Backend inconsistencies
-* Delayed updates or caching problems
 
-This test validates that both APIs are aligned and reliable.
+* Returns a map of pet statuses and their counts.
 
----
+### 2. Get Pets by Status
 
-## APIs Used
 
-### 1. GET '/store/inventory'
+GET /pet/findByStatus?status=available
 
-* Returns a JSON map of pet counts grouped by status
+
+* Returns a list of pets filtered by status.
 
 ---
 
-### 2. GET '/pet/findByStatus?status=available'
-
-* Returns a list of pets filtered by a specific status
-
----
-
-## Test Execution Flow
+##  Test Flow
 
 ### Step 1: Fetch Inventory Data
 
-* Send request to:
+* Call /store/inventory
+* Parse response as a Map<String, Integer>
+* Extract count for given status (e.g., "available")
 
-  "
-  GET /store/inventory
-  "
-* Extract the count of pets with status "available"
+### Step 2: Fetch Pet List
 
- *Implementation Details:*
+* Call /pet/findByStatus?status=available
+* Count number of items in response list
 
-* Attempt direct extraction using key "available"
-* If not found, apply fallback logic:
+### Step 3: Validation
 
-  * Iterate through all keys
-  * Match keys using case-insensitive comparison
-  * Handle irregular values such as:
-
-    * "availabe"
-    * "avaliable"
-  
-
- This ensures robustness against inconsistent API responses
+* Compare both counts
+* Assert they match exactly
 
 ---
 
-### Step 2: Fetch Pets by Status
+##  Key Implementation Details
 
-* Send request to:
+###  Dynamic Data Handling
 
-  "
-  GET /pet/findByStatus?status=available
-  "
-* Extract the list of pets
-* Count total number of items in the response
+* Status is passed from *feature file*
+* No hardcoded values used
 
- This represents the "actual number of available pets in the system"
+### Robust Parsing Logic
 
----
+* Handles inconsistent API keys (e.g., "available", "Available")
+* Uses fallback logic with case-insensitive matching
 
-### Step 3: Validation Logic
+###  Cross-Endpoint Validation
 
-* Compare:
+* Ensures consistency between:
 
-  "
-  Inventory Count vs Pet List Count
-  "
-
- *Validation Rule Applied:*
-
-"
-Inventory Count >= Pet List Count
-"
-
----
-
-## Why Not Use Strict Equality?
-
-In real-world systems:
-
-* Inventory APIs may use caching or aggregation
-* Pet list APIs return real-time records
-
-Because of this:
-
-* Small differences may occur temporarily
-* Strict equality ("==") can lead to false test failures
-
-Using ">=" ensures:
-
-* Stability of tests
-* Realistic validation
-* Better alignment with production behavior
-
----
-
-## Technical Implementation
-
-### Framework Design
-
-* "Client Pattern" used for API interaction
-* Separation of concerns:
-
-  * 'PetClient'-> Pet-related APIs
-  * 'StoreClient' -> Inventory API
-  * Step Definitions -> Test logic
-
----
-
-### BDD Approach (Cucumber)
-
-Feature file uses simple and readable steps:
-
-""
-gherkin
-Given user fetches inventory for "available"
-When user fetches pets by status "available"
-Then user validates count matches for "available"
-""
-
-Easy to understand for both technical and non-technical stakeholders
-
----
+    * Inventory API (aggregated data)
+    * Pet API (actual records)
 
 ### Logging
 
-* Implemented using Log4j2
-* Logs include:
-
-  * Step execution
-  * API responses
-  * Extracted values
-  * Final validation result
-
- Helps in debugging and traceability
+* Logs request, response, and validation details using Log4j
 
 ---
 
@@ -170,77 +75,48 @@ Easy to understand for both technical and non-technical stakeholders
 
 
 src
- ├── main
- │   └── java
- │       ├── base
- │       │   └── BaseTest.java
- │       └── clients
- │           ├── PetClient.java
- │           └── StoreClient.java
- │
- ├── test
- │   └── java
- │       ├── runner
- │       │   └── TestRunner_TC2.java
- │       └── steps
- │           └── InventorySteps_TC2.java
- │
- └── resources
-     └── features
-         └── inventory_TC2.feature
+└── test
+├── java
+│   ├── clients
+│   │   └── PetClient.java
+│   ├── steps
+│   │   └── InventorySteps_TC2.java
+│   └── runner
+│       └── TestRunner_TC2.java
+│
+└── resources
+└── features
+└── inventory_TC2.feature
 
 
 ---
 
-## Execution
+##  Execution
 
-To run only Test Case 2:
+Run only Test Case 2:
 
-"
-mvn clean test -Dtest=TestRunner_TC2
-"
- Ensures isolated execution without affecting other test cases
+
+mvn test -Dtest=TestRunner_TC2
 
 
 ---
 
-## Key Strengths of This Implementation
+## Sample Output
 
-* Cross-endpoint validation
-* Dynamic data handling (no hardcoded values)
-* Robust parsing for inconsistent API responses
-* Clean and maintainable code structure
-* BDD-based readable test scenarios
-* Logging for better debugging and analysis
-
----
-
-## Challenges Faced & Solutions
-
-### Challenge:
-
-Inventory API returns inconsistent or incorrect keys
-
-### Solution:
-
-* Implemented fallback logic
-* Used case-insensitive comparison
-* Trimmed extra spaces
-* Ensured correct aggregation
+* Inventory Count: 491
+* Pet List Count: 491
+* Validation Passed
 
 ---
 
 ## Conclusion
 
-This test case demonstrates a "real-world API testing scenario" where data must be validated across multiple endpoints.
+This test case ensures *data consistency across APIs* by validating that:
 
-It highlights:
+* Inventory summary data matches actual pet records.
+* Implementation is robust, dynamic, and production-ready.
 
-* Strong understanding of API behavior
-* Practical handling of inconsistent data
-* Clean and scalable test framework design
-
-This approach ensures reliable and maintainable API automation.
+---
 
 ## Author
-Rekha M
+Rekha
