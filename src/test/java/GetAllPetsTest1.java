@@ -4,9 +4,8 @@ import io.restassured.RestAssured;
 import org.junit.Test;
 
 import static io.restassured.RestAssured.*;
-import static org.hamcrest.Matchers.*;
 
-public class GetAllPetsTest {
+public class GetAllPetsTest1 {
 
     @Test
     public void getAllPets() {

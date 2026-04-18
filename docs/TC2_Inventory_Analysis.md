@@ -2,7 +2,7 @@
 
 ## Objective
 
-Validate that the number of pets marked as **"available"** in the inventory API matches the number of pets returned by the pet listing API.
+Validate that the number of pets marked as *"available"* in the inventory API matches the number of pets returned by the pet listing API.
 
 ---
 
@@ -10,17 +10,15 @@ Validate that the number of pets marked as **"available"** in the inventory API 
 
 ### 1. Get Inventory
 
-```
+
 GET /store/inventory
-```
 
 * Returns a map of pet statuses and their counts.
 
 ### 2. Get Pets by Status
 
-```
+
 GET /pet/findByStatus?status=available
-```
 
 * Returns a list of pets filtered by status.
 
@@ -30,13 +28,13 @@ GET /pet/findByStatus?status=available
 
 ### Step 1: Fetch Inventory Data
 
-* Call `/store/inventory`
-* Parse response as a `Map<String, Integer>`
+* Call /store/inventory
+* Parse response as a Map<String, Integer>
 * Extract count for given status (e.g., "available")
 
 ### Step 2: Fetch Pet List
 
-* Call `/pet/findByStatus?status=available`
+* Call /pet/findByStatus?status=available
 * Count number of items in response list
 
 ### Step 3: Validation
@@ -50,7 +48,7 @@ GET /pet/findByStatus?status=available
 
 ###  Dynamic Data Handling
 
-* Status is passed from **feature file**
+* Status is passed from *feature file*
 * No hardcoded values used
 
 ### Robust Parsing Logic
@@ -62,43 +60,37 @@ GET /pet/findByStatus?status=available
 
 * Ensures consistency between:
 
-  * Inventory API (aggregated data)
-  * Pet API (actual records)
-
+    * Inventory API (aggregated data)
+    * Pet API (actual records)
 ### Logging
 
 * Logs request, response, and validation details using Log4j
-
 ---
 
 ## Project Structure
 
-```
+
 src
- └── test
-     ├── java
-     │   ├── clients
-     │   │   └── PetClient.java
-     │   ├── steps
-     │   │   └── InventorySteps_TC2.java
-     │   └── runner
-     │       └── TestRunner_TC2.java
-     │
-     └── resources
-         └── features
-             └── inventory_TC2.feature
-```
+└── test
+├── java
+│   ├── clients
+│   │   └── PetClient.java
+│   ├── steps
+│   │   └── InventorySteps_TC2.java
+│   └── runner
+│       └── TestRunner_TC2.java
+│
+└── resources
+└── features
+└── inventory_TC2.feature
+
 
 ---
 
 ##  Execution
 
 Run only Test Case 2:
-
-```
-mvn test -Dtest=TestRunner_TC2
-```
-
+mvn test -Dtest=TestRunner_TC2  //Individual branch
 ---
 
 ## Sample Output
@@ -111,7 +103,7 @@ mvn test -Dtest=TestRunner_TC2
 
 ## Conclusion
 
-This test case ensures **data consistency across APIs** by validating that:
+This test case ensures *data consistency across APIs* by validating that:
 
 * Inventory summary data matches actual pet records.
 * Implementation is robust, dynamic, and production-ready.

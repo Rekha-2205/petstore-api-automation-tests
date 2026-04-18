@@ -1,3 +1,4 @@
+
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://www.maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -8,31 +9,42 @@
   <artifactId>petstore-api-automation</artifactId>
   <version>1.0-SNAPSHOT</version>
 
+
   <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
+
+    <cucumber.version>7.14.0</cucumber.version>
+    <restassured.version>5.4.0</restassured.version>
+    <log4j2.version>2.22.1</log4j2.version>
+    <jackson.version>2.17.0</jackson.version>
   </properties>
 
   <dependencies>
 
-    <!-- REST Assured -->
     <dependency>
       <groupId>io.rest-assured</groupId>
       <artifactId>rest-assured</artifactId>
+      <version>${restassured.version}</version>
     </dependency>
 
     <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${jackson.version}</version>
     </dependency>
 
-    <!-- Cucumber -->
     <dependency>
       <groupId>io.cucumber</groupId>
       <artifactId>cucumber-java</artifactId>
+      <version>${cucumber.version}</version>
       <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>io.cucumber</groupId>
       <artifactId>cucumber-junit</artifactId>
+      <version>${cucumber.version}</version>
       <scope>test</scope>
     </dependency>
 
@@ -44,6 +56,22 @@
     </dependency>
 
     <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest</artifactId>
+      <version>2.2</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
+      <version>${log4j2.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+      <version>${log4j2.version}</version>
     </dependency>
 
   </dependencies>
@@ -55,8 +83,6 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.11.0</version>
-        <configuration>
-        </configuration>
       </plugin>
 
       <plugin>
@@ -69,3 +95,4 @@
   </build>
 
 </project>
+
